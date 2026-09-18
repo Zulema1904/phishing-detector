@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Phishing.exe · detector de emails con IA</title>
+  <meta name="description" content="Pega un email y una IA explicable te dice si parece phishing y por qué.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Crect width='16' height='16' fill='%23120f2e'/%3E%3Cpath fill='%23c3a6ff' d='M1 4h14v9H1z'/%3E%3Cpath fill='%23120f2e' d='M2 5h1v1h1v1h1v1h1v1h4V8h1V7h1V6h1V5h1v1h-1v1h-1v1h-1v1H9v1H7V9H6V8H5V7H4V6H2z'/%3E%3Cpath fill='%23ff5c8a' d='M11 9h4v6h-4z'/%3E%3Cpath fill='%23fff' d='M12 10h2v2h-2zm0 3h2v1h-2z'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Pixelify+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <header class="titlebar">
+      <span class="tb-ico" aria-hidden="true">🎣</span>
+      <h1>Phishing.exe</h1>
+      <span class="tb-sub" data-t="subtitle"></span>
+      <button class="btn small" id="lang" type="button">EN</button>
+    </header>
+
+    <div class="grid">
+      <section class="card">
+        <header class="card-h"><h2 data-t="inputTitle"></h2></header>
+        <div class="card-body">
+          <div class="examples"><span class="detail" data-t="try"></span><span id="examples"></span></div>
+          <textarea id="email" rows="11" spellcheck="false"></textarea>
+          <div class="row">
+            <button class="btn primary" id="analyze" type="button" data-t="analyze"></button>
+            <button class="btn" id="clear" type="button" data-t="clear"></button>
+            <span class="detail" data-t="privacy"></span>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" id="result" hidden>
+        <header class="card-h"><h2 data-t="verdictTitle"></h2></header>
+        <div class="card-body">
+          <div class="verdict" id="verdict"><span class="v-emoji"></span><div><b class="v-title"></b><p class="v-text"></p></div></div>
+          <div class="scores">
+            <div>
+              <span class="detail" data-t="aiScore"></span>
+              <div class="meter"><i id="ai-bar"></i></div>
+              <span class="score" id="ai-val"></span>
+            </div>
+            <div>
+              <span class="detail" data-t="signalScore"></span>
+              <div class="meter"><i id="sig-bar"></i></div>
+              <span class="score" id="sig-val"></span>
+            </div>
+          </div>
+          <h3 data-t="signalsTitle"></h3>
+          <ul class="signals" id="signals"></ul>
+          <h3 data-t="wordsTitle"></h3>
+          <p class="detail" data-t="wordsNote"></p>
+          <div class="words" id="words"></div>
+          <div class="marked" id="marked"></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <header class="card-h"><h2 data-t="modelTitle"></h2></header>
+        <div class="card-body" id="model"></div>
+      </section>
+    </div>
+    <footer class="foot" data-t="footer"></footer>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

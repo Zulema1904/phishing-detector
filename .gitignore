@@ -1,0 +1,8 @@
+# El dataset se descarga al entrenar
+data/
+
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.claude/

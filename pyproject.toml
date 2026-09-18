@@ -1,0 +1,11 @@
+[project]
+name = "phishing-detector"
+version = "0.1.0"
+description = "Detector de emails de phishing con IA explicable (TF-IDF + regresión logística) que funciona en el navegador."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Zulema Gutiérrez" }]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
