@@ -3,7 +3,7 @@
  * Dos capas que se complementan:
  *  1. IA (TF-IDF + regresión logística entrenada en Python, exportada a modelo.json).
  *  2. Señales de alerta: reglas sencillas en español e inglés (enlaces raros, urgencia, contraseñas…).
- * Parámetros de URL: ?lang=es|en  ?embed (dentro de ZulemaOS)
+ * Parámetros de URL: ?lang=es|en  ?embed (dentro del portfolio)
  */
 (() => {
   'use strict';
