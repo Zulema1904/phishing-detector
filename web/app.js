@@ -16,9 +16,13 @@
   const T = {
     es: {
       subtitle: 'Detector de emails de phishing con IA explicable',
-      inputTitle: '📧 Pega aquí un email', try: 'Prueba:', analyze: 'Analizar 🔍', clear: 'Borrar',
+      inputTitle: '📧 Analiza un email', orTry: '…o prueba con un ejemplo:', analyze: 'Analizar 🔍', clear: 'Borrar',
       privacy: '🔒 El análisis se hace en tu navegador: el texto no sale de tu ordenador.',
-      placeholder: 'Asunto, remitente y cuerpo del email…',
+      placeholder: 'Pega aquí el email: asunto, remitente y mensaje.\n\nTambién puedes arrastrar un archivo .eml o .txt sobre este recuadro.',
+      steps: ['Abre el email sospechoso en tu correo.', 'Selecciónalo todo (Ctrl+A) y cópialo (Ctrl+C).', 'Pégalo abajo (Ctrl+V): se analiza solo.'],
+      pasteBtn: '📋 Pegar y analizar', fileBtn: '📎 Abrir archivo…', dropHint: 'Suelta aquí tu archivo .eml o .txt',
+      pasteError: 'Tu navegador no me deja leer el portapapeles. Pega el texto con Ctrl+V.',
+      aiNote: 'La IA aprendió con emails en inglés; con otros idiomas se guía por las señales de alerta.',
       verdictTitle: '🧐 Veredicto', aiScore: 'IA: parecido a phishing o spam', signalScore: 'Señales de alerta',
       signalsTitle: '🚩 Señales de alerta', wordsTitle: '🔤 Palabras que ha tenido en cuenta la IA',
       wordsNote: 'Rosa: empujan hacia phishing. Verde: hacia email normal. El número es su peso en la decisión.',
@@ -27,7 +31,8 @@
         high: ['🚨', 'Phishing probable', 'La IA y las señales de alerta coinciden. No pulses enlaces ni respondas con datos.'],
         suspect: ['⚠️', 'Sospechoso', 'Hay indicios. Comprueba el remitente y entra en la web escribiendo tú la dirección.'],
         spam: ['📢', 'Parece spam o publicidad', 'Se parece a correo masivo, pero no pide datos ni tiene enlaces raros.'],
-        unknown: ['🤔', 'No lo sé', 'La IA no reconoce casi ninguna palabra (aprendió con emails en inglés) y no hay señales de alerta.'],
+        rulesOk: ['✅', 'Sin señales de alerta', 'Las reglas no ven nada raro, pero la IA no entiende este idioma: revisa también quién lo envía y si esperabas el correo.'],
+        unknown: ['🤔', 'Muy poco texto', 'Pega el email completo (asunto y cuerpo): con tan poco no puedo decirte nada.'],
         ok: ['✅', 'Parece seguro', 'Ni la IA ni las reglas ven nada raro. Aun así, desconfía si no esperabas este email.'],
       },
       modelTitle: '🧠 Cómo funciona el modelo',
@@ -44,9 +49,13 @@
     },
     en: {
       subtitle: 'Phishing email detector with explainable AI',
-      inputTitle: '📧 Paste an email here', try: 'Try:', analyze: 'Analyse 🔍', clear: 'Clear',
+      inputTitle: '📧 Analyse an email', orTry: '…or try an example:', analyze: 'Analyse 🔍', clear: 'Clear',
       privacy: '🔒 Analysis runs in your browser: the text never leaves your computer.',
-      placeholder: 'Subject, sender and body of the email…',
+      placeholder: 'Paste the email here: subject, sender and message.\n\nYou can also drop an .eml or .txt file onto this box.',
+      steps: ['Open the suspicious email in your mail app.', 'Select it all (Ctrl+A) and copy it (Ctrl+C).', 'Paste it below (Ctrl+V): it analyses itself.'],
+      pasteBtn: '📋 Paste and analyse', fileBtn: '📎 Open file…', dropHint: 'Drop your .eml or .txt file here',
+      pasteError: 'Your browser will not let me read the clipboard. Paste the text with Ctrl+V.',
+      aiNote: 'The AI learned from English emails; in other languages it relies on the warning signs.',
       verdictTitle: '🧐 Verdict', aiScore: 'AI: looks like phishing or spam', signalScore: 'Warning signs',
       signalsTitle: '🚩 Warning signs', wordsTitle: '🔤 Words the AI took into account',
       wordsNote: 'Pink: push towards phishing. Green: towards a normal email. The number is its weight in the decision.',
@@ -55,7 +64,8 @@
         high: ['🚨', 'Likely phishing', 'The AI and the warning signs agree. Don’t click links or reply with personal data.'],
         suspect: ['⚠️', 'Suspicious', 'There are red flags. Check the sender and type the website address yourself.'],
         spam: ['📢', 'Looks like spam or advertising', 'It resembles bulk mail, but it asks for no data and has no odd links.'],
-        unknown: ['🤔', 'Not sure', 'The AI barely recognises any word (it learned from English emails) and there are no warning signs.'],
+        rulesOk: ['✅', 'No warning signs', 'The rules see nothing odd, but the AI does not understand this language: also check who sent it and whether you expected it.'],
+        unknown: ['🤔', 'Too little text', 'Paste the whole email (subject and body): there is not enough here to tell you anything.'],
         ok: ['✅', 'Looks safe', 'Neither the AI nor the rules see anything odd. Still, be wary if you weren’t expecting it.'],
       },
       modelTitle: '🧠 How the model works',
@@ -86,13 +96,24 @@
     [0.1, /!{3,}|\b[A-ZÁÉÍÓÚÑ]{6,}\b.*\b[A-ZÁÉÍÓÚÑ]{6,}\b/, 'Muchas mayúsculas o exclamaciones', 'Lots of capitals or exclamation marks'],
   ];
 
-  const EXAMPLES = [
-    [['🎣 Banco', '🎣 Bank'], 'Subject: Unusual sign-in activity\n\nDear customer,\n\nWe detected unusual activity and your account has been suspended. To avoid permanent closure, verify your identity within 24 hours by entering your username, password and card number here:\n\nhttp://192.168.45.10/secure-login\n\nSecurity Department'],
-    [['🎁 Premio', '🎁 Prize'], 'Subject: CONGRATULATIONS!!! You have won\n\nYou have been selected to receive a $1000 gift card. Claim your prize now, the offer expires today! Reply with your full name, address and credit card number to cover shipping.'],
-    [['💼 Trabajo', '💼 Work'], 'Subject: Notes from yesterday\n\nHi Ana,\n\nThanks for the notes from yesterday\'s meeting. I\'ve attached the updated slides; let me know if the timeline works for the team.\n\nBest,\nMarta'],
-    [['📢 Publicidad', '📢 Advert'], 'Subject: Summer sale starts now\n\nSave up to 50% on our new collection. Free shipping on all orders this week. Visit our online store to see the best offers. To stop receiving these emails, click remove.'],
-    [['🇪🇸 Español', '🇪🇸 Spanish'], 'Asunto: Aviso importante\n\nEstimado cliente:\n\nSu cuenta ha sido BLOQUEADA por motivos de seguridad. Verifique su identidad en las próximas 24 horas introduciendo su contraseña y el número de tarjeta en este enlace: http://bit.ly/verificacion-segura\n\nAtentamente,\nDepartamento de Seguridad'],
-  ];
+  // Los ejemplos van en el idioma de la interfaz; el último, a propósito, en el otro idioma,
+  // para enseñar que la IA solo entiende inglés y que las señales de alerta funcionan igual.
+  const EXAMPLES = {
+    es: [
+      ['🎣 Banco', 'Asunto: Actividad inusual en su cuenta\n\nEstimado cliente:\n\nHemos detectado un acceso inusual y su cuenta ha sido BLOQUEADA. Para evitar su cancelación definitiva, verifique su identidad en las próximas 24 horas introduciendo su usuario, contraseña y número de tarjeta aquí:\n\nhttp://192.168.45.10/verificacion-cliente\n\nDepartamento de Seguridad'],
+      ['🎁 Premio', 'Asunto: ¡¡¡ENHORABUENA!!! Ha resultado premiado\n\nHa sido seleccionado para recibir una tarjeta regalo de 1.000 €. Reclame su premio ahora, la oferta caduca hoy. Responda con su nombre completo, dirección y número de tarjeta para cubrir los gastos de envío.'],
+      ['💼 Trabajo', 'Asunto: Notas de la reunión de ayer\n\nHola Ana:\n\nGracias por las notas de la reunión de ayer. Te adjunto las diapositivas actualizadas; dime si el calendario le encaja al equipo.\n\nUn saludo,\nMarta'],
+      ['📢 Publicidad', 'Asunto: Empiezan las rebajas de verano\n\nHasta un 50 % de descuento en la nueva colección. Envío gratis en todos los pedidos esta semana. Visita nuestra tienda online para ver las mejores ofertas. Si no quieres recibir más correos, pulsa aquí para darte de baja.'],
+      ['🇬🇧 En inglés', 'Subject: Unusual sign-in activity\n\nDear customer,\n\nWe detected unusual activity and your account has been suspended. To avoid permanent closure, verify your identity within 24 hours by entering your username, password and card number here:\n\nhttp://192.168.45.10/secure-login\n\nSecurity Department'],
+    ],
+    en: [
+      ['🎣 Bank', 'Subject: Unusual sign-in activity\n\nDear customer,\n\nWe detected unusual activity and your account has been suspended. To avoid permanent closure, verify your identity within 24 hours by entering your username, password and card number here:\n\nhttp://192.168.45.10/secure-login\n\nSecurity Department'],
+      ['🎁 Prize', 'Subject: CONGRATULATIONS!!! You have won\n\nYou have been selected to receive a $1000 gift card. Claim your prize now, the offer expires today! Reply with your full name, address and credit card number to cover shipping.'],
+      ['💼 Work', 'Subject: Notes from yesterday\n\nHi Ana,\n\nThanks for the notes from yesterday\'s meeting. I\'ve attached the updated slides; let me know if the timeline works for the team.\n\nBest,\nMarta'],
+      ['📢 Advert', 'Subject: Summer sale starts now\n\nSave up to 50% on our new collection. Free shipping on all orders this week. Visit our online store to see the best offers. To stop receiving these emails, click remove.'],
+      ['🇪🇸 In Spanish', 'Asunto: Aviso importante\n\nEstimado cliente:\n\nSu cuenta ha sido BLOQUEADA por motivos de seguridad. Verifique su identidad en las próximas 24 horas introduciendo su contraseña y el número de tarjeta en este enlace: http://bit.ly/verificacion-segura\n\nAtentamente,\nDepartamento de Seguridad'],
+    ],
+  };
 
   const $ = (id) => document.getElementById(id);
   const t = () => T[lang];
@@ -114,7 +135,11 @@
     const norm = Math.hypot(...vals.map(([, v]) => v)) || 1;
     const contrib = vals.map(([i, v]) => [M.palabras[i], (v / norm) * M.pesos[i]]);
     const z = M.sesgo + contrib.reduce((s, [, c]) => s + c, 0);
-    return { p: 1 / (1 + Math.exp(-z)), known: counts.size, contrib };
+    // Proporción de palabras que el modelo reconoce: en inglés ronda el 90 %, en otros idiomas
+    // baja del 40 %. Si es baja, la IA no opina y mandan las señales de alerta.
+    const total = (text.toLowerCase().match(re) || []).length;
+    const conocidas = [...counts.values()].reduce((a, b) => a + b, 0);
+    return { p: 1 / (1 + Math.exp(-z)), known: counts.size, ratio: total ? conocidas / total : 0, tokens: total, contrib };
   }
 
   /* ---------- 2 · Señales de alerta ---------- */
@@ -126,12 +151,14 @@
     return { hits, score: Math.min(1, hits.reduce((s, h) => s + h.w, 0)) };
   }
 
+  const opina = (ai) => ai.known >= 6 && ai.ratio >= 0.6;
+
   function verdict(ai, sig) {
-    const p = ai.known >= 6 ? ai.p : null; // con muy pocas palabras conocidas la IA no opina
+    const p = opina(ai) ? ai.p : null;   // si no reconoce el idioma, la IA no opina
     if ((p != null && p >= 0.5 && sig >= 0.4) || sig >= 0.7) return ['high', 'high'];
     if (p != null && p >= 0.5) return sig > 0 ? ['suspect', 'mid'] : ['spam', 'mid'];
     if (sig >= 0.3) return ['suspect', 'mid'];
-    if (p == null) return ['unknown', 'mid'];
+    if (p == null) return ai.tokens < 20 ? ['unknown', 'mid'] : ['rulesOk', 'ok'];
     return ['ok', 'ok'];
   }
 
@@ -148,11 +175,12 @@
     $('verdict').querySelector('.v-text').textContent = desc;
 
     const lvl = (x) => (x >= 0.7 ? 'c-high' : x >= 0.4 ? 'c-mid' : 'c-ok');
-    const aiKnown = ai.known >= 6;
+    const aiKnown = opina(ai);
     $('ai-bar').style.width = aiKnown ? pct(ai.p) : '0%';
     $('ai-bar').className = aiKnown ? lvl(ai.p) : '';
     $('ai-val').textContent = aiKnown ? pct(ai.p) : t().aiUnknown;
     $('ai-val').className = `score ${aiKnown ? lvl(ai.p) : ''}`;
+    $('ai-note').textContent = aiKnown ? '' : t().aiNote;
     $('sig-bar').style.width = pct(sig.score);
     $('sig-bar').className = lvl(sig.score);
     $('sig-val').textContent = pct(sig.score);
@@ -195,7 +223,8 @@
     document.querySelectorAll('[data-t]').forEach((el) => { const v = t()[el.dataset.t]; if (typeof v === 'string') el.textContent = v; });
     $('lang').textContent = lang === 'es' ? 'EN' : 'ES';
     $('email').placeholder = t().placeholder;
-    $('examples').innerHTML = EXAMPLES.map(([label], i) => `<button class="btn small" type="button" data-ex="${i}">${label[lang === 'es' ? 0 : 1]}</button>`).join('');
+    $('steps').innerHTML = t().steps.map((x) => `<li>${esc(x)}</li>`).join('');
+    $('examples').innerHTML = EXAMPLES[lang].map(([label], i) => `<button class="btn small" type="button" data-ex="${i}">${label}</button>`).join('');
     if (M) renderModel();
     if (!$('result').hidden) analyze();
   }
@@ -205,8 +234,55 @@
   $('clear').addEventListener('click', () => { $('email').value = ''; $('result').hidden = true; $('email').focus(); });
   $('examples').addEventListener('click', (e) => {
     const b = e.target.closest('[data-ex]');
-    if (b) { $('email').value = EXAMPLES[b.dataset.ex][1]; analyze(); }
+    if (b) cargar(EXAMPLES[lang][b.dataset.ex][1]);
   });
+
+  function cargar(texto) {
+    $('email').value = texto;
+    analyze();
+    $('result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  // Pegar desde el portapapeles (algunos navegadores piden permiso)
+  $('paste').addEventListener('click', async () => {
+    try {
+      const texto = await navigator.clipboard.readText();
+      if (texto.trim()) return cargar(texto);
+      $('email').focus();
+    } catch {
+      $('email').focus();
+      alert(t().pasteError);
+    }
+  });
+
+  // Abrir un archivo .eml o .txt guardado del correo
+  // (File.text() no existe en navegadores antiguos: ahí se usa FileReader)
+  const leer = (f) => (f.text ? f.text() : new Promise((ok, err) => {
+    const r = new FileReader();
+    r.onload = () => ok(String(r.result));
+    r.onerror = () => err(r.error);
+    r.readAsText(f);
+  }));
+
+  $('file').addEventListener('click', () => $('fileInput').click());
+  $('fileInput').addEventListener('change', (e) => {
+    const f = e.target.files[0];
+    if (f) leer(f).then(cargar);
+    e.target.value = '';
+  });
+
+  // Arrastrar y soltar el archivo encima
+  const zona = $('drop');
+  ['dragenter', 'dragover'].forEach((ev) => zona.addEventListener(ev, (e) => { e.preventDefault(); zona.classList.add('over'); }));
+  ['dragleave', 'drop'].forEach((ev) => zona.addEventListener(ev, () => zona.classList.remove('over')));
+  zona.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const f = e.dataTransfer.files[0];
+    if (f) leer(f).then(cargar);
+  });
+
+  // Al pegar con Ctrl+V se analiza solo
+  $('email').addEventListener('paste', () => setTimeout(analyze, 0));
   $('lang').addEventListener('click', () => { lang = lang === 'es' ? 'en' : 'es'; applyLang(); });
 
   applyLang();

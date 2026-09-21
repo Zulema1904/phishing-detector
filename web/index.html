@@ -24,8 +24,18 @@
       <section class="card">
         <header class="card-h"><h2 data-t="inputTitle"></h2></header>
         <div class="card-body">
-          <div class="examples"><span class="detail" data-t="try"></span><span id="examples"></span></div>
-          <textarea id="email" rows="11" spellcheck="false"></textarea>
+          <ol class="steps" id="steps"></ol>
+          <div class="row">
+            <button class="btn" id="paste" type="button" data-t="pasteBtn"></button>
+            <button class="btn" id="file" type="button" data-t="fileBtn"></button>
+            <input type="file" id="fileInput" accept=".eml,.txt,.msg,text/plain,message/rfc822" hidden>
+            <span class="detail" data-t="orTry"></span>
+            <span id="examples"></span>
+          </div>
+          <div class="drop" id="drop">
+            <textarea id="email" rows="11" spellcheck="false"></textarea>
+            <span class="drop-hint" data-t="dropHint"></span>
+          </div>
           <div class="row">
             <button class="btn primary" id="analyze" type="button" data-t="analyze"></button>
             <button class="btn" id="clear" type="button" data-t="clear"></button>
@@ -43,6 +53,7 @@
               <span class="detail" data-t="aiScore"></span>
               <div class="meter"><i id="ai-bar"></i></div>
               <span class="score" id="ai-val"></span>
+              <span class="detail ai-note" id="ai-note"></span>
             </div>
             <div>
               <span class="detail" data-t="signalScore"></span>

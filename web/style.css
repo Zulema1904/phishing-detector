@@ -71,6 +71,20 @@ a { color: var(--blue); }
 .row, .examples { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 #examples { display: contents; }
 
+.steps { margin: 0; padding-left: 22px; font-size: 13px; }
+.steps li { margin-bottom: 2px; }
+.steps li::marker { color: var(--accent); font-weight: 700; }
+
+.drop { position: relative; }
+.drop.over textarea { border-color: var(--accent); outline: 3px dashed var(--accent); outline-offset: -6px; }
+.drop-hint {
+  position: absolute; inset: auto 10px 10px auto;
+  padding: 2px 8px; background: rgba(42, 35, 96, .75); color: #ddd4f6;
+  font-size: 11.5px; pointer-events: none;
+}
+.drop.over .drop-hint { background: var(--accent); color: #fff; }
+.ai-note { grid-column: 1 / -1; font-size: 11.5px; }
+
 textarea {
   width: 100%; padding: 10px 12px; resize: vertical;
   background: var(--screen); color: #e8e0ff;

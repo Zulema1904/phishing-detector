@@ -38,6 +38,14 @@ enron vince kaminski louise sally gary john mark ect hou houston hourahead url n
 linguistics linguist language english university edu listinfo mailman forteana spamassassin razor
 rpm fork bitbitch groups users sightings paliourg xls tm oo gr em
 """.split()
+
+# Palabras sueltas en español que venían de los correos en español del dataset: el modelo aprendía
+# "si pone para es phishing", y cualquier texto en español salía sospechoso sin motivo. Sin ellas,
+# un email en español apenas tiene palabras conocidas y la IA dice "sin opinión", que es lo honesto.
+ARTEFACTOS += """
+para por que con las los una del sus este esta como mas pero cuando donde
+correo usted gracias hola saludos informacion cuenta enlace
+""".split()
 SEMILLA = 1904
 
 

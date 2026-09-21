@@ -8,6 +8,9 @@ en la decisión de la IA y qué señales de alerta ha encontrado.
 **🔗 Demo:** se abre como **Phishing.exe** dentro de mi portfolio, [ZulemaOS](https://zulema1904.github.io).
 Todo funciona en el navegador: el texto del email no se envía a ningún servidor.
 
+Puedes cargar el email pegándolo (se analiza solo), con el botón de pegar del portapapeles,
+abriendo un `.eml`/`.txt`, arrastrándolo sobre el recuadro o probando los ejemplos.
+
 ## Cómo decide
 
 Combina dos capas que se complementan:
@@ -27,10 +30,10 @@ manteniendo la proporción de cada clase):
 
 | Exactitud | Precisión | Sensibilidad | F1 |
 |---|---|---|---|
-| 97,8 % | 96,7 % | 97,6 % | 0,971 |
+| 98,1 % | 97,0 % | 97,8 % | 0,974 |
 
-- **Sensibilidad** 97,6 %: de cada 100 emails de phishing, detecta casi 98.
-- **Precisión** 96,7 %: cuando dice "phishing", acierta casi 97 de cada 100 veces.
+- **Sensibilidad** 97,8 %: de cada 100 emails de phishing, detecta casi 98.
+- **Precisión** 97,0 %: cuando dice "phishing", acierta 97 de cada 100 veces.
 
 ## Decisiones que puedo explicar
 
@@ -40,8 +43,11 @@ manteniendo la proporción de cada clase):
 - **Quité "trampas" del dataset.** La primera versión acertaba un 98,4 %, pero sus palabras favoritas
   para decir "seguro" eran *enron*, *vince* o *spamassassin*: los emails normales del dataset vienen
   sobre todo de Enron y de listas de correo, así que el modelo aprendía *de dónde venía el email*, no
-  *si era phishing*. Al excluir esas palabras la nota baja a 97,8 %, pero el modelo generaliza mejor
-  a emails reales.
+  *si era phishing*. También aprendía que *para*, *su* o *las* eran señal de phishing, porque las
+  traía de los pocos correos en español del dataset. Sin esas palabras generaliza mejor a emails reales.
+- **La IA sabe cuándo callarse.** Antes de opinar mira qué proporción del texto reconoce: en inglés
+  ronda el 90 %, y en otro idioma baja del 40 %. Por debajo del 60 % dice "sin opinión" y el veredicto
+  lo deciden las señales de alerta, que sí funcionan en español.
 - **El JSON se comprueba con tests.** `app.js` repite a mano la cuenta de scikit-learn (TF-IDF
   sublineal, normalización y función sigmoide); un test verifica que da las mismas probabilidades.
 - **"No lo sé" también es una respuesta.** Si el email apenas tiene palabras que el modelo conozca
@@ -51,6 +57,8 @@ manteniendo la proporción de cada clase):
 
 - El dataset está en inglés y mezcla phishing con spam comercial: un email de publicidad legítimo
   puede salir como "parece spam". Por eso el veredicto distingue *spam* de *phishing probable*.
+- **En español la IA no opina** y manda el análisis de señales. Para que también aprendiera español
+  haría falta un dataset en español con licencia clara; los que he encontrado no la tienen.
 - Es una herramienta didáctica: ante la duda, no pulses enlaces y entra en la web escribiendo tú la dirección.
 
 ## Cómo ejecutarlo
