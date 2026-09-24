@@ -5,7 +5,7 @@
 Pegas un email y te dice si parece **phishing** y, sobre todo, **por qué**: qué palabras han pesado
 en la decisión de la IA y qué señales de alerta ha encontrado.
 
-**🔗 Demo:** se abre como **Phishing.exe** dentro de mi portfolio, [ZulemaOS](https://zulema1904.github.io).
+**🔗 Demo:** [zulemagutierrez.com/phishing](https://zulemagutierrez.com/phishing/) · también se abre como **Phishing.exe** en el [escritorio retro de mi portfolio](https://zulemagutierrez.com/escritorio#app=phishing).
 Todo funciona en el navegador: el texto del email no se envía a ningún servidor.
 
 Puedes cargar el email pegándolo (se analiza solo), con el botón de pegar del portapapeles,
