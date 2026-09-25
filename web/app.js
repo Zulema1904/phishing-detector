@@ -26,9 +26,11 @@
       verdictTitle: '🧐 Veredicto', aiScore: 'IA: parecido a phishing o spam', signalScore: 'Señales de alerta',
       signalsTitle: '🚩 Señales de alerta', wordsTitle: '🔤 Palabras que ha tenido en cuenta la IA',
       wordsNote: 'Rosa: empujan hacia phishing. Verde: hacia email normal. El número es su peso en la decisión.',
+      wordsSkipped: 'La IA no ha opinado sobre este email (reconoce muy pocas palabras), así que aquí no hay nada que destacar.',
       noSignals: 'Ninguna señal de alerta clara.', aiUnknown: 'sin opinión',
       verdicts: {
         high: ['🚨', 'Phishing probable', 'La IA y las señales de alerta coinciden. No pulses enlaces ni respondas con datos.'],
+        highRules: ['🚨', 'Phishing probable', 'Las señales de alerta son muy claras. No pulses enlaces ni respondas con datos.'],
         suspect: ['⚠️', 'Sospechoso', 'Hay indicios. Comprueba el remitente y entra en la web escribiendo tú la dirección.'],
         spam: ['📢', 'Parece spam o publicidad', 'Se parece a correo masivo, pero no pide datos ni tiene enlaces raros.'],
         rulesOk: ['✅', 'Sin señales de alerta', 'Las reglas no ven nada raro, pero la IA no entiende este idioma: revisa también quién lo envía y si esperabas el correo.'],
@@ -59,9 +61,11 @@
       verdictTitle: '🧐 Verdict', aiScore: 'AI: looks like phishing or spam', signalScore: 'Warning signs',
       signalsTitle: '🚩 Warning signs', wordsTitle: '🔤 Words the AI took into account',
       wordsNote: 'Pink: push towards phishing. Green: towards a normal email. The number is its weight in the decision.',
+      wordsSkipped: 'The AI gave no opinion on this email (it recognises very few words), so there is nothing to highlight here.',
       noSignals: 'No clear warning signs.', aiUnknown: 'no opinion',
       verdicts: {
         high: ['🚨', 'Likely phishing', 'The AI and the warning signs agree. Don’t click links or reply with personal data.'],
+        highRules: ['🚨', 'Likely phishing', 'The warning signs are very clear. Don’t click links or reply with personal data.'],
         suspect: ['⚠️', 'Suspicious', 'There are red flags. Check the sender and type the website address yourself.'],
         spam: ['📢', 'Looks like spam or advertising', 'It resembles bulk mail, but it asks for no data and has no odd links.'],
         rulesOk: ['✅', 'No warning signs', 'The rules see nothing odd, but the AI does not understand this language: also check who sent it and whether you expected it.'],
@@ -155,7 +159,8 @@
 
   function verdict(ai, sig) {
     const p = opina(ai) ? ai.p : null;   // si no reconoce el idioma, la IA no opina
-    if ((p != null && p >= 0.5 && sig >= 0.4) || sig >= 0.7) return ['high', 'high'];
+    if (p != null && p >= 0.5 && sig >= 0.4) return ['high', 'high'];
+    if (sig >= 0.7) return [p == null ? 'highRules' : 'high', 'high'];
     if (p != null && p >= 0.5) return sig > 0 ? ['suspect', 'mid'] : ['spam', 'mid'];
     if (sig >= 0.3) return ['suspect', 'mid'];
     if (p == null) return ai.tokens < 20 ? ['unknown', 'mid'] : ['rulesOk', 'ok'];
@@ -189,6 +194,12 @@
     $('signals').innerHTML = sig.hits.length
       ? sig.hits.map((h) => `<li>${esc(h.label)}<small>“${esc(h.match)}”</small></li>`).join('')
       : `<li class="none">${esc(t().noSignals)}</li>`;
+
+    // Si la IA no opina (otro idioma), sus palabras no significan nada: se explica en su lugar
+    $('words').hidden = !aiKnown;
+    $('marked').hidden = !aiKnown;
+    $('wordsNote').textContent = aiKnown ? t().wordsNote : t().wordsSkipped;
+    if (!aiKnown) { $('result').hidden = false; return; }
 
     const sorted = [...ai.contrib].sort((a, b) => b[1] - a[1]);
     const top = sorted.filter(([, c]) => c > 0.01).slice(0, 8).concat(sorted.filter(([, c]) => c < -0.01).slice(-8).reverse());
