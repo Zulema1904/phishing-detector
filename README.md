@@ -86,3 +86,7 @@ tests/               Tests (el JSON reproduce a scikit-learn, sin artefactos del
 ## Stack
 
 Python · scikit-learn · pandas · pytest · GitHub Actions · JavaScript
+
+## Licencia
+
+El código está bajo licencia [MIT](LICENSE). El dataset de `data/` mantiene su propia licencia (LGPL-3.0, ver «Datos»).
